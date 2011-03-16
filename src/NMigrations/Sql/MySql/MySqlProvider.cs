@@ -40,6 +40,17 @@ namespace NMigrations.Sql.MySql
             return null;
         }
 
+        /// <summary>
+        /// Get a provider-specific SQL statement to test for the existence of a table.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>SQL statement.</returns>
+        public override string GetTableExistenceSql(string tableName)
+        {
+            // Currently unimplemented.
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Public Constructors

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Transactions;
@@ -99,7 +100,7 @@ namespace NMigrations.Core
                     ApplyMigration(migration, item.Value, context);
 
                     // Persist changes
-                    txScope.Complete();
+                    txScope.Complete();    
                 }
             }
         }

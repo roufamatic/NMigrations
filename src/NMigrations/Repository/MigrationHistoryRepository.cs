@@ -16,7 +16,9 @@
  *
  */
 
+using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace NMigrations.Repository
 {
@@ -36,8 +38,8 @@ namespace NMigrations.Repository
         /// <returns>The migration history.</returns>
         public virtual MigrationHistoryItem[] RetrieveHistory(MigrationContext context)
         {
-            bool error;
-            return InternalRetrieveHistory(context, out error);
+            bool historySchemaExists;
+            return InternalRetrieveHistory(context, out historySchemaExists);
         }
 
         /// <summary>
@@ -74,11 +76,33 @@ namespace NMigrations.Repository
         /// been applied to the database so far.
         /// </summary>
         /// <param name="context">The migration context.</param>
-        /// <param name="error">if set to <c>true</c> an error occured while querying the database.</param>
+        /// <param name="historySchemaExists">if set to <c>false</c> an error occured while querying the database.</param>
         /// <returns>The migration history.</returns>
-        private MigrationHistoryItem[] InternalRetrieveHistory(MigrationContext context, out bool error)
+        private MigrationHistoryItem[] InternalRetrieveHistory(MigrationContext context, out bool historySchemaExists)
         {
-            error = false;
+            historySchemaExists = true;
+            
+            try
+            {
+                string sql = context.SqlProvider.GetTableExistenceSql(TableName);
+                using (var cmd = context.Connection.CreateCommand())
+                {
+                    cmd.CommandText = sql;
+                    var tableExists = Convert.ToBoolean(cmd.ExecuteScalar());
+                    if (!tableExists)
+                    {
+                        // If the table doesn't exist, we'll just ride on the error.
+                        historySchemaExists = false;
+                        return new MigrationHistoryItem[0];
+                    }
+                }
+            }
+            catch(NotImplementedException)
+            {
+                // If it's not implemented, hope we can just catch the error later.
+            }
+            // All other errors bubble up.
+
             var result = new List<MigrationHistoryItem>();
             try
             {
@@ -103,7 +127,9 @@ namespace NMigrations.Repository
             catch
             {
                 /* ignore, schema doesn't exist yet */
-                error = true;
+                // NOTE: Some providers may abort the transaction in the event of an error. If this is the case make sure to override
+                // the provider-specific method ISqlProvider.GetTableExistenceSql() (see above).
+                historySchemaExists = false;
             }
 
             return result.ToArray();
@@ -126,9 +152,9 @@ namespace NMigrations.Repository
             //
             // Check if schema already exists
             //
-            bool error;
-            InternalRetrieveHistory(context, out error);
-            if (error)
+            bool historySchemaExists;
+            InternalRetrieveHistory(context, out historySchemaExists);
+            if (!historySchemaExists)
             {
                 //
                 // Try to create schema ... if it already exits the

@@ -16,6 +16,8 @@
  *
  */
 
+using NMigrations.Core;
+
 namespace NMigrations.Sql
 {
     /// <summary>

@@ -42,13 +42,14 @@ namespace NMigrations.Shell
             //
             // Catch unhandled exceptions and terminate decently
             //
+            /*
             AppDomain.CurrentDomain.UnhandledException += delegate(object sender, UnhandledExceptionEventArgs e)
             {
                 Exception ex = e.ExceptionObject as Exception;
                 Console.WriteLine(ex.Message);
                 Environment.Exit(-1);
             };
-
+            */
             //
             // Read command line arguments
             //
@@ -120,8 +121,7 @@ namespace NMigrations.Shell
                 if (!arguments.Silent || !e.Success)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Migration finished succcessful: {0}", e.Success);
-                    Console.WriteLine(new string('=', Console.WindowWidth));
+                    Console.WriteLine("Migration finished succcessfully: {0}", e.Success);
                     Console.WriteLine();
                 }
             };

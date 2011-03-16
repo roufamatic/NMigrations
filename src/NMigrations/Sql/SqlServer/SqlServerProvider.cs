@@ -41,6 +41,20 @@ namespace NMigrations.Sql.SqlServer
             return "GO";
         }
 
+        /// <summary>
+        /// Get a provider-specific SQL statement to test for the existence of a table.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>SQL statement.</returns>
+        public override string GetTableExistenceSql(string tableName)
+        {
+            return
+                String.Format(
+                    @"SELECT CASE WHEN EXISTS(SELECT 1 FROM sys.tables WHERE Name = '{0}') THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS TableExists",
+                    EscapeString(tableName));
+
+        }
+
         #endregion
 
         #region Public Constructors

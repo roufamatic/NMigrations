@@ -203,6 +203,13 @@ namespace NMigrations.Sql
             return "IX_" + tableName + "_" + string.Join("", columnNames);
         }
 
+        /// <summary>
+        /// Get a provider-specific SQL statement to test for the existence of a table.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>SQL statement.</returns>
+        public abstract string GetTableExistenceSql(string tableName);
+
         #endregion
 
         #region Protected Methods

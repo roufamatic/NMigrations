@@ -80,5 +80,12 @@ namespace NMigrations.Sql
         /// <param name="columnNames">The column names.</param>
         /// <returns>The index name.</returns>
         string GetIndexName(string tableName, string[] columnNames);
+        
+        /// <summary>
+        /// Get a provider-specific SQL statement to test for the existence of a table.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>SQL statement.</returns>
+        string GetTableExistenceSql(string tableName);
     }
 }
